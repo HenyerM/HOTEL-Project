@@ -1,0 +1,40 @@
+-- For this project, It needed to know if Hotels's revenue is growing and if there is any trend in the data
+
+--1 Revenue information segmented by Business
+
+
+WITH hotel_info as (
+--Unifying data within the tables with the information from 2018,2019 and 2020. all of the tables have the same dimensions.
+SELECT * FROM dbo.['2018$']
+UNION 
+SELECT * FROM dbo.['2019$']
+UNION 
+SELECT * FROM dbo.['2020$'])
+
+-- Grouping the information by revenue
+--Revenue = (stays_in_weekend_nights+stays_in_week_nights)*adr where adr is the daily rate cost of the stay
+SELECT arrival_date_year, hotel,
+ROUND(SUM((stays_in_weekend_nights+stays_in_week_nights)*adr),2) as 'Revenue'
+FROM hotel_info
+GROUP by arrival_date_year,hotel; 
+
+--2 Grouping all information into a one single table for analyzing
+
+WITH hotel_info as (
+SELECT * FROM dbo.['2018$']
+UNION 
+SELECT * FROM dbo.['2019$']
+UNION 
+SELECT * FROM dbo.['2020$'])
+
+SELECT * 
+from hotel_info as hi
+JOIN  market_segment$ as ms
+ON  hi.market_segment = ms.market_segment
+-- This is add discount information of the booking based on the market segment.
+JOIN dbo.meal_cost$ as mc
+ON mc.meal = hi.meal
+-- This is add cost of each meal based on the meal type;
+
+
+--The tables created can be analyze through a visualization Tool for better understanding of the story line
